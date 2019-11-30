@@ -16,6 +16,9 @@ This repository contains an experimental Grbl simulator that compiles the main G
  - On Linux, hook it to a fake serial port (/dev/ttyFAKE) and use it to test your Grbl interface software:
 
   -  `> socat PTY,raw,link=/dev/ttyFAKE,echo=0 "EXEC:'./grbl_sim.exe -n -s step.out -b block.out',pty,raw,echo=0" `
+  
+  for Mac use this commandline instead
+  -  `> socat PTY,raw,link=./ttyFAKE,echo=0 "EXEC:'./grbl_sim.exe -n -s step.out -b block.out',pty,raw,echo=0" `
 
  
 ### Realtime modifications:
@@ -26,7 +29,7 @@ This repository contains an experimental Grbl simulator that compiles the main G
 
 - Clone this repository into the directory containing the Grbl source code.  (should be `<repo>/grbl`).  
 
-- Edit the Grbl-Sim Makefile to select the correct `PLATFORM =`  line.  LINUX and WINDOWS are currently supported. 
+- Edit the Grbl-Sim Makefile to select the correct `PLATFORM =`  line. 
 
  - *(You may need to make other modifications to the Makefile and some environment variables for your particular machine. Please share any modifications you find)*
 
