@@ -34,9 +34,12 @@
 //any platform-specific setup that must be done before sim starts here
 clock_serv_t cclock;
 
+void enable_kbhit(int dir);
+
 void platform_init() {
   host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
 
+  //enable_kbhit(1);
 
   mach_timebase_info(&timebase);
   conversion_factor = (double)timebase.numer / (double)timebase.denom;
@@ -45,18 +48,20 @@ void platform_init() {
 //cleanup int here;
 void platform_terminate()
 {
+  // enable_kbhit(0);
   mach_port_deallocate(mach_task_self(), cclock);
 }
 
 //returns a free-running 32 bit nanosecond counter which rolls over
 uint32_t platform_ns()
 {
-  static uint32_t gTimeBase = 0;
-  static uint32_t timestamp;
+  static uint64_t gTimeBase = 0;
+  static uint64_t timestamp;
 
   mach_timespec_t ts;
 
   clock_get_time(cclock, &ts);
+
 
   timestamp = ts.tv_sec*1e9+ts.tv_nsec;
   if (gTimeBase== 0){gTimeBase=timestamp;}
@@ -67,11 +72,8 @@ uint32_t platform_ns()
 void platform_sleep(long  microsec)
 {
   struct timespec ts={0};
-  while (microsec >= MS_PER_SEC){
-	 ts.tv_sec++;
-	 microsec-=MS_PER_SEC;
-  }
-  ts.tv_nsec = microsec*1000;
+  ts.tv_sec = microsec % MS_PER_SEC;
+  ts.tv_nsec = (microsec - (ts.tv_sec * MS_PER_SEC)) * 1000;
   nanosleep(&ts,NULL);
 }
 
@@ -86,9 +88,9 @@ void enable_kbhit(int dir)
   {
     tcgetattr( STDIN_FILENO, &oldt);
     newt = oldt;
-	 newt.c_lflag &= ~( ICANON  );
-	 if (!SIM_ECHO_TERMINAL) {
-		newt.c_lflag &= ~( ECHO );
+	  newt.c_lflag &= ~( ICANON );
+	  if (!SIM_ECHO_TERMINAL) {
+	  	newt.c_lflag &= ~( ECHO );
 	 }
     tcsetattr( STDIN_FILENO, TCSANOW, &newt);
   }

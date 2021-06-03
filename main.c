@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
   // to the real grbl.
   // Theoretically flushing could be limited to complete lines. Unfortunately Windows
   // does not know line buffered streams. So for now we stick to flushing every character.
-  //setvbuf(stdout, NULL, _IONBF, 1);
-  //setvbuf(stderr, NULL, _IONBF, 1);
+  setvbuf(stdout, NULL, _IONBF, 1);
+  setvbuf(stderr, NULL, _IONBF, 1);
   //( Files are now closed cleanly when sim gets EOF or CTRL-F.)
   platform_init(); 
 
