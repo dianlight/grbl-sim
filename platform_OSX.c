@@ -25,6 +25,8 @@
 #include <termios.h>
 #include <time.h>
 #include <sys/time.h>
+#include <mach/clock.h>
+#include <mach/mach.h>
 #include "platform.h"
 
 #define MS_PER_SEC 1000000
