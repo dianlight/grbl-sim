@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <mach/clock.h>
 #include <mach/mach.h>
+#include <poll.h>
 #include "platform.h"
 
 #define MS_PER_SEC 1000000
@@ -79,6 +80,7 @@ void platform_sleep(long  microsec)
 
 #define SIM_ECHO_TERMINAL 1 //use this to make grbl_sim act like a serial terminal with local echo on.
 
+/*
 //set terminal to allow kbhit detection
 void enable_kbhit(int dir)
 {
@@ -97,7 +99,8 @@ void enable_kbhit(int dir)
   else
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
-
+*/
+/*
 //detect key pressed
 int kbhit (void)
 {
@@ -105,10 +108,10 @@ int kbhit (void)
   fd_set rdfs={{0}};
   int retval;
 
-  /* tv.tv_sec = 0; */
-  /* tv.tv_usec = 0; */
+  /* tv.tv_sec = 0; * /
+  /* tv.tv_usec = 0; * /
 
-  /* FD_ZERO(&rdfs); */
+  /* FD_ZERO(&rdfs); * /
   FD_SET (STDIN_FILENO, &rdfs);
 
   select(STDIN_FILENO+1, &rdfs, NULL, NULL, &tv);
@@ -116,6 +119,7 @@ int kbhit (void)
 
   return retval;
 }
+*/
 
 plat_thread_t* platform_start_thread(plat_threadfunc_t threadfunc) {
   plat_thread_t* th = malloc(sizeof(plat_thread_t));
@@ -140,11 +144,17 @@ void platform_kill_thread(plat_thread_t* th){
 
 //return char if one available.
 uint8_t platform_poll_stdin() {
+  struct pollfd input[1] = {{.fd = 0, .events = POLLIN}};
   uint8_t char_in=0;
+  if(poll(input,1,0) > 0)
+    read(0, &char_in, 1);
+  /*
   enable_kbhit(1);
   if ( kbhit()) {
 	 char_in = getchar();
   }
   enable_kbhit(0);
+  */
+
   return char_in;
 }
